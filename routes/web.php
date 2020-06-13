@@ -16,3 +16,36 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::group([
+    'prefix' => 'categories'
+], function(){
+    Route::get('/', 'CategoryController@index')->name('categories.index');
+    Route::get('/create', 'CategoryController@create')->name('categories.create');
+    Route::post('/store', 'CategoryController@store')->name('categories.store');
+    Route::get('/{id}/edit', 'CategoryController@edit')->name('categories.edit');
+    Route::put('/{id}/update', 'CategoryController@update')->name('categories.update');
+    Route::delete('/{id}/delete', 'CategoryController@delete')->name('categories.delete');
+});
+
+Route::group([
+    'prefix' => 'post'
+], function(){
+    Route::get('/', 'PostController@index')->name('post.index');
+    Route::get('/create', 'PostController@create')->name('post.create');
+    Route::post('/store', 'PostController@store')->name('post.store');
+    
+    Route::group([
+        'middleware' => 'admin_role',
+        'middleware' => 'can:edit-post,post'
+    ], function(){
+        Route::get('/{post}/edit', 'PostController@edit')->name('post.edit');
+        Route::put('/{post}/update', 'PostController@update')->name('post.update');
+        Route::delete('/{post}/delete', 'PostController@delete')->name('post.delete');
+    });
+});
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
